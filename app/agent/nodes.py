@@ -2,6 +2,7 @@ from app.agent.llm import chat_json
 from app.guardrails.guards import input_guard, cross_validate, output_gate
 from app.rag.retriever import HybridRetriever
 from app.config import CONFIDENCE_THRESHOLD
+from app.mcp_server.client import call_tool
 
 _retriever = None
 def get_retriever():
@@ -22,7 +23,8 @@ def guard_node(state):
 
 def check_info_node(state):
     """节点2：信息完备性检查 + 检索"""
-    hits = get_retriever().search(state["description"])
+    hits = call_tool("search_taxonomy", {"query": state["description"], "top_n": 5})
+    #hits = get_retriever().search(state["description"])
     candidates = "\n".join(
         f"- {h['code']}: {h['text']}" for h in hits[:3]
     )

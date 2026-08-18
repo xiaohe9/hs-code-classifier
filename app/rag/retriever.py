@@ -18,7 +18,11 @@ def _tokenize(text: str) -> list[str]:
 class HybridRetriever:
     def __init__(self):
         self.client = ollama.Client(host=OLLAMA_BASE_URL)
-        db = chromadb.PersistentClient(path=CHROMA_DIR)
+        db = chromadb.PersistentClient(
+            path=CHROMA_DIR,
+            settings=chromadb.Settings(anonymized_telemetry=False),
+        )
+        # db = chromadb.PersistentClient(path=CHROMA_DIR)
         self.coll = db.get_collection(COLLECTION_NAME)
         # 启动时把全量文档拉出建 BM25 索引（数据量小，内存索引足够；
         # 百万级才需要 Elasticsearch，面试可主动讲这个权衡）
