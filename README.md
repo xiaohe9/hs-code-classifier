@@ -107,6 +107,10 @@ curl -X POST http://localhost:8000/classify \
 
 ## 效果演示
 
+推理过程实时可视化（SSE 流式推送，演示页）：
+
+![推理过程可视化](docs/images/demo-page.png)
+
 正常归类请求（FastAPI /docs 页面）：
 
 ![正常归类](docs/images/demo-ok.png)
@@ -186,8 +190,9 @@ hs-code-classifier/
 - [x] v0.2 RAG 链路（税则入库 + 混合检索）
 - [x] v0.3 Agent 闭环（追问机制 + 防幻觉 + 结构化输出）
 - [x] v0.4 评测体系（50组测试集 + CI 回归）
-- [x] v1.0 Docker 交付 + CI 绿
-- [ ] v1.1 SSE 推理过程可视化演示页（下一步）
+- [x] v1.0 Docker 交付 + 双 LLM 后端
+- [x] v1.1 SSE 推理过程可视化演示页
+- [ ] v1.2 全量税则接入 + 持久化部署
 
 ## 合规声明
 
