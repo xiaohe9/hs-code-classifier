@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>HS Code 智能归类 · 推理过程可视化</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; background: #f7f8fa; }
+  h1 { font-size: 22px; }
+  .bar { display: flex; gap: 8px; margin: 16px 0 24px; }
+  input { flex: 1; padding: 10px 12px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; }
+  button { padding: 10px 24px; font-size: 15px; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+  button:disabled { background: #93c5fd; cursor: wait; }
+  .step { background: #fff; border-left: 4px solid #2563eb; padding: 10px 14px; margin: 8px 0; border-radius: 4px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.08); animation: fadein .4s; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+  pre { background: #1e293b; color: #a5f3fc; padding: 16px; border-radius: 8px; white-space: pre-wrap; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>智能商品归类 Agent · 推理过程实时可视化</h1>
+<div class="bar">
+  <input id="desc" value="圣诞节用LED灯串，低压24V，装饰用">
+  <button id="btn">开始归类</button>
+</div>
+<div id="steps"></div>
+<pre id="result" style="display:none"></pre>
+
+<script>
+const btn = document.getElementById('btn');
+btn.onclick = async () => {
+  const desc = document.getElementById('desc').value.trim();
+  if (!desc) return;
+  const steps = document.getElementById('steps');
+  const result = document.getElementById('result');
+  steps.innerHTML = ''; result.style.display = 'none'; result.textContent = '';
+  btn.disabled = true; btn.textContent = '归类中…';
+
+  const resp = await fetch('/classify/stream', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({description: desc})
+  });
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '', shown = 0, lastState = null;
+
+  while (true) {
+    const {done, value} = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, {stream: true});
+    const parts = buf.split('\n\n');
+    buf = parts.pop();
+    for (const part of parts) {
+      if (!part.startsWith('data:')) continue;
+      const data = part.slice(5).trim();
+      if (data === '[DONE]') continue;
+      const payload = JSON.parse(data);
+      if (payload.error) { steps.innerHTML += '<div class="step" style="border-color:#dc2626">❌ ' + payload.error + '</div>'; continue; }
+      lastState = payload.state;
+      const trace = (lastState && lastState.trace) || [];
+      for (; shown < trace.length; shown++) {
+        const div = document.createElement('div');
+        div.className = 'step';
+        div.textContent = '✅ ' + trace[shown];
+        steps.appendChild(div);
+      }
+    }
+  }
+  if (lastState) {
+    result.style.display = 'block';
+    result.textContent = JSON.stringify(lastState, null, 2);
+  }
+  btn.disabled = false; btn.textContent = '开始归类';
+};
+</script>
+</body>
+</html>
