@@ -16,6 +16,8 @@ services:
     environment:
       OLLAMA_BASE_URL: http://host.docker.internal:11434
       MCP_URL: http://mcp-server:8765/sse
+      LLM_BACKEND: ${LLM_BACKEND:-ollama}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
     depends_on:
       - mcp-server
     restart: unless-stopped
