@@ -31,7 +31,9 @@ def check_info_node(state):
     r = chat_json(
         system=(
             "你是海关商品归类专家。根据商品描述和候选税则条文，判断现有信息是否足以完成归类。"
-            "如果区分候选编码还缺关键属性（如材质、是否电动、用途、适用人群），列出最多3个追问问题。"
+            "判断原则：描述已包含区分候选编码所需的关键特征（材质、动力方式、适用人群、用途等）时，"
+            "判定充分，直接归类；仅当关键特征缺失、候选编码确实无法区分时才追问。"
+            "追问最多3个，必须指向候选编码间的区分特征。"
             '输出JSON: {"sufficient": true/false, "questions": ["..."]}'
         ),
         user=f"商品描述：{state['description']}\n\n候选条文：\n{candidates}",
@@ -58,7 +60,10 @@ def classify_node(state):
         system=(
             "你是海关商品归类专家。只能从给定条文范围内选择编码，禁止编造条文之外的编码。"
             "必须引用支持你结论的条文 chunk_id。"
-            '输出JSON: {"hs_code":"xxxx.xx.xx","confidence":0.0-1.0,'
+            "重要：如果检索到的子目层级没有适合该商品的条目（例如条文明确排除），"
+            "允许输出品目级编码（如 8504.40），此时 confidence 不得高于 0.5 并在 reasoning 中说明原因；"
+            "绝不为了凑齐8位编码而选择条文明确排除或不匹配的子目——宁转人工，不可错答。"
+            '输出JSON: {"hs_code":"xxxx.xx.xx或xxxx.xx","confidence":0.0-1.0,'
             '"basis_chunk_ids":["..."],"reasoning":"...","alternatives":["..."]}'
         ),
         user=f"商品描述：{state['description']}\n\n可用条文：\n{rules_text}",

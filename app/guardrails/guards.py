@@ -3,11 +3,12 @@ import re
 
 # ── 第一层：输入硬规则（禁限品目录示例，真实业务接海关禁限目录）──
 PROHIBITED_PATTERNS = [
-    r"枪支|弹药|爆炸物",
+    r"枪支|枪管|弹药|爆炸物",
     r"毒品|冰毒|海洛因|大麻",
-    r"管制刀具|弩",
+    r"管制刀具|弩|弹簧刀",
     r"假币|伪造证件",
     r"象牙|犀牛角|濒危动植物",
+    r"烟花|爆竹",
 ]
 
 def input_guard(description: str) -> dict:
@@ -17,7 +18,7 @@ def input_guard(description: str) -> dict:
             return {"blocked": True, "reason": f"命中禁限品规则: {pat}",
                     "message": "该商品疑似属于禁止/限制进出境物品，请直接咨询持证报关员，系统不提供归类建议。"}
     if len(description.strip()) < 4:
-        return {"blocked": True, "reason": "描述过短",
+        return {"blocked": False, "reason": "描述过短",
                 "message": "商品描述信息过少，请补充材质、用途、功能等信息。"}
     return {"blocked": False}
 

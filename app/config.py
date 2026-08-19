@@ -15,3 +15,8 @@ FINAL_TOP_N = 5          # 融合后取 top-5 进上下文
 
 # 防幻觉
 CONFIDENCE_THRESHOLD = 0.6   # 低于此值转人工复核
+
+
+# config.py 加两行
+LLM_BACKEND = os.getenv("LLM_BACKEND", "ollama")   # ollama / deepseek
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")   # 只进环境变量，老规矩
