@@ -1,0 +1,8 @@
+.venv/
+.git/
+chroma_db/
+chroma_test/
+__pycache__/
+*.pyc
+.pytest_cache/
+docs/images/

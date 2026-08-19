@@ -1,9 +1,11 @@
 """MCP Client 封装：Agent 通过 SSE 调用税则工具"""
 import asyncio
+import os
 from mcp import ClientSession
 from mcp.client.sse import sse_client
 
-MCP_URL = "http://localhost:8765/sse"
+# MCP_URL = "http://localhost:8765/sse"
+MCP_URL = os.getenv("MCP_URL", "http://localhost:8765/sse")
 
 
 async def _call_tool(name: str, args: dict):
@@ -11,6 +13,9 @@ async def _call_tool(name: str, args: dict):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool(name, args)
+            if result.isError:
+                detail = result.content[0].text if result.content else "（无内容）"
+                raise RuntimeError(f"MCP工具 {name} 执行失败: {detail}")
             sc = result.structuredContent
             if sc is not None:
                 # FastMCP 会把 list 返回值包成 {"result": [...]}
