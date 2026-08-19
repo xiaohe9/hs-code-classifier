@@ -1,0 +1,14 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      # 单测不依赖 Ollama（护栏/工具函数纯逻辑），CI 可跑
+      - run: pytest tests/unit -v
+      # 评测依赖 Ollama 模型，CI 不跑，本地跑（README 已注明）
