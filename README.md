@@ -53,6 +53,13 @@ LLM 只做它擅长的——商品特征与品目条文的语义匹配；所有�
 
 ## 快速开始
 
+## Kubernetes 部署
+
+提供生产级 K8s 部署配置（k8s-deploy.yaml）：双副本、liveness/readiness 双探针、滚动更新与回滚支持。
+
+kubectl apply -f k8s-deploy.yaml   # 部署
+kubectl rollout undo deployment/hs-code   # 一键回滚
+
 ```bash
 # 1. 克隆 & 安装
 git clone https://github.com/xiaohe9/hs-code-classifier.git
