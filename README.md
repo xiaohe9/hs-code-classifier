@@ -129,8 +129,8 @@ curl -X POST http://localhost:8000/classify \
 
 ## 评测结果
 
-&gt; 测试集:50 组(35 normal + 9 clarify + 5 blocked + 边界案例) | 评测后端: deepseek-chat
-&gt; 本地 Ollama(qwen3:4b)可完整复现流程,批量评测用云端后端换速度,一个环境变量切换
+> 测试集:50 组(35 normal + 9 clarify + 5 blocked + 边界案例) | 评测后端: deepseek-chat
+> 本地 Ollama(qwen3:4b)可完整复现流程,批量评测用云端后端换速度,一个环境变量切换
 
 | 指标 | 结果 |
 |---|---|
